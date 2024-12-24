@@ -1,0 +1,21 @@
+services:
+  assignment-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: 1
+      MSSQL_SA_PASSWORD: Password123!
+    ports:
+      - "1432:1433"
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+  assignment-web-api:
+    image: assignment-web-api
+    restart: always
+    build:
+      dockerfile: Assignment.Web.Api/Dockerfile
+    environment:
+      ConnectionStrings__SqlServer: Server=assignment-database,1433;Database=TrialDb;User Id=sa;Password=Password123!;Encrypt=False;
+    ports:
+      - "8080:8080"
+    depends_on:
+      - assignment-database
